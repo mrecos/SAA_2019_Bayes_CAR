@@ -21,5 +21,50 @@ This research presents a method to test the endogenous spatial correlation effec
 
 ### TO DO:
 
-:black_square_button: - Write paper
+:black_square_button: - Research
+:black_square_button: - Code
+:black_square_button: - Text
+:black_square_button: - Poster/Graphics
 
+
+### Resources:
+
+
+- [Spatial Models in Stan: Intrinsic Auto-Regressive Models for Areal Data](https://mc-stan.org/users/documentation/case-studies/icar_stan.html)
+  * Stan case study in spatial modeling with CAR and ICAR models, descriptions, and code
+
+- [Exact sparse CAR models in Stan](https://mc-stan.org/users/documentation/case-studies/mbjoseph-CARStan.html)
+  * Stan code and example for implimenting a sparse (and non-sparse) prior over Phi
+
+- [Fast CAR: Two weird tricks for fast conditional autoregressive models in Stan](https://andrewgelman.com/2016/09/02/two-weird-tricks-for-fast-conditional-autoregressive-models-in-stan/)
+  * Gelman blog post on sparse CAR model. Comments section has lots of relevant discussion.
+  
+- [Using rstan and spdep for Spatial Modelling](https://rpubs.com/chrisbrunsdon/carstan)
+  * rpubs post on spatial models, CAR, Stan, and Bayes in general. Lots of intro info and code.
+  
+- [package brms](https://cran.r-project.org/web/packages/brms/brms.pdf)
+  * brms package version of CAR with both sparse and otherwise models using cor_car() for spatial weight matrix
+
+
+
+
+
+
+- [Bayesian analysis of a CAR model](https://www4.stat.ncsu.edu/~reich/SpatialStats/code/CAR.html)
+  * Bayesian CAR model with homegrown MCMC function, examples, and description of the model.
+
+
+- [Bayesian analysis of conditional autoregressive models](https://www.ism.ac.jp/editsec/aism/pdf/10463_2010_Article_298.pdf)
+  * Detailed workup on CAR model statistics and inference. Discusses choice of priors.
+  
+
+  
+- [CARBayes: An R Package for Bayesian Spatial Modeling with Conditional Autoregressive Priors](https://www.jstatsoft.org/article/view/v055i13/v55i13.pdf)
+  * Article describing R package for CAR, the CAR model, and examples 
+  
+
+
+
+- [Neighborhood Dependence in Bayesian Spatial Models](https://pdfs.semanticscholar.org/60db/f7abf83011690dffd8ae62b805c475c04694.pdf)
+  * In depth deiscussion of correlation between prior and posterior covariance matricies based on adjacency graph.
+  
