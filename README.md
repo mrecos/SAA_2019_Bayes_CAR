@@ -21,9 +21,16 @@ This research presents a method to test the endogenous spatial correlation effec
 
 ### TO DO:
 
+
 :black_square_button: - Research
+
+
 :black_square_button: - Code
+
+
 :black_square_button: - Text
+
+
 :black_square_button: - Poster/Graphics
 
 
