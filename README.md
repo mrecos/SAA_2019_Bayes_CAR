@@ -22,16 +22,35 @@ This research presents a method to test the endogenous spatial correlation effec
 ### TO DO:
 
 
-:black_square_button: - Research
+#### Research
+
+:black_square_button: - read sources below
 
 
-:black_square_button: - Code
+#### Data Prep.
+
+:black_square_button: - select study areas
+
+:black_square_button: - get site data
+
+:black_square_button: - create fishnet grid (regular size/shape or physio-shed based?)
+
+:black_square_button: - calculate target (as count, area, and density)
 
 
-:black_square_button: - Text
+##### Code
+
+:black_square_button:
 
 
-:black_square_button: - Poster/Graphics
+#### Writing
+
+:black_square_button:
+
+
+####  Poster/Graphics
+
+:black_square_button:
 
 
 ### Resources:
