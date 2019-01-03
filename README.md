@@ -94,3 +94,12 @@ This research presents a method to test the endogenous spatial correlation effec
 - [Neighborhood Dependence in Bayesian Spatial Models](https://pdfs.semanticscholar.org/60db/f7abf83011690dffd8ae62b805c475c04694.pdf)
   * In depth deiscussion of correlation between prior and posterior covariance matricies based on adjacency graph.
   
+  
+- [A close look at the spatial structure implied by the CAR and SAR models](https://www4.stat.ncsu.edu/~reich/CUSP/wall.car.sar.pdf)
+  * A paper describing, testing, and somewhat critiquing the spatial structre matrix W in the SAR and CAR model
+  * Good description of models and stats
+  
+  
+- [NOTEBOOK FOR SPATIAL DATA ANALYSIS ](https://www.seas.upenn.edu/~ese502/NOTEBOOK/Part_III/6_Spatial_Regression_Models_for_Areal_Data_Analysis.pdf)
+  * Class notes from Tony Smith at UPenn for sptail regression and touching in CAR
+  
