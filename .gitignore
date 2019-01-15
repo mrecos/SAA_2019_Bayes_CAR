@@ -25,3 +25,5 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 SAA_2019_Bayes_CAR.Rproj
+## ignore site data folder
+SITE_DATA/
