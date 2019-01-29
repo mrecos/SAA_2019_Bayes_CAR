@@ -29,28 +29,42 @@ This research presents a method to test the endogenous spatial correlation effec
 
 #### Data Prep.
 
-:black_square_button: - select study areas
+:black_square_button: - create simulated environments
 
-:black_square_button: - get site data
+:black_square_button: - create simulated sites
 
-:black_square_button: - create fishnet grid (regular size/shape or physio-shed based?)
+:ballot_box_with_check: - create fishnet grid (octagonal fishnet)
 
-:black_square_button: - calculate target (as count, area, and density)
+:ballot_box_with_check: - calculate target (as count)
+
+:ballot_box_with_check: - Framework of probabilistic model
+
+:black_square_button: - gather data from real-world test case
 
 
 ##### Code
 
-:black_square_button:
+:black_square_button: - simulations
+
+:ballot_box_with_check: - Stan model
+
+:black_square_button: - evlaution of simulations
+
+:black_square_button: - test on real data
 
 
 #### Writing
 
-:black_square_button:
+:black_square_button: - poster text
 
 
 ####  Poster/Graphics
 
-:black_square_button:
+:black_square_button: - plots
+
+:black_square_button: - layout/design
+
+:black_square_button: - printing
 
 
 ### Resources:
