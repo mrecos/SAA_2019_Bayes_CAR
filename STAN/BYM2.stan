@@ -57,3 +57,4 @@ generated quantities {
   vector[N] eta = log_E + beta0 + x * betas + convolved_re * sigma; // co-variates
   vector[N] mu = exp(eta);
 }
+

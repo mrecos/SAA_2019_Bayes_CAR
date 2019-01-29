@@ -5,17 +5,6 @@ library("FedData")
 library("raster")
 library("velox")
 
-st_drop_geometry <- function(x) {
-  if(inherits(x,"sf")) {
-    x <- st_set_geometry(x, NULL)
-    class(x) <- 'data.frame'
-  }
-  return(x)
-}
-ll <- function(dat, crs = 4326){
-  st_transform(dat, crs)
-}
-
 pass <- st_read("./SITE_DATA/PASS_w_info_EPSG4326.shp")
 
 pass1 <- pass %>% 
