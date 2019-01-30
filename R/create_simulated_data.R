@@ -88,6 +88,34 @@ show_landscape(list(
 
 pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,3:6])))
 
+########## Testing ability to detect correlation...
+# intersect fishnet to all raster, for each cell compute corr, put more sites in cells with higher corr??
+
+# get all raster values within each cell
+x1 <- vx_SenvRcult1$extract(SenvRcult_fishnet, small = TRUE)
+x2 <- vx_SenvRcult2$extract(SenvRcult_fishnet, small = TRUE)
+x3 <- vx_SenvRcult3$extract(SenvRcult_fishnet, small = TRUE)
+x4 <- vx_SenvRcult4$extract(SenvRcult_fishnet, small = TRUE)
+
+# cast raster values to list column of vectors, map vectors to mean correlation, join to fishnet by id
+xt <- tibble::enframe(x1) %>% 
+  rename("x1" = value) %>% 
+  mutate(x2 = tibble::enframe(x2) %>% pull(value),
+         x3 = tibble::enframe(x3) %>% pull(value),
+         x4 = tibble::enframe(x4) %>% pull(value),
+         fishnet_id = as.integer(name)) %>% 
+  mutate(cor = pmap_dbl(list(x1,x2,x3,x4), function(a,b,c,d) mean(cor(cbind(a,b,c,d))))) %>% 
+  dplyr::select(fishnet_id, cor) %>% 
+  left_join(SenvRcult_fishnet, ., by = "fishnet_id")
+
+new <- cbind(xt$fishnet_id, sapply(-st_drop_geometry(xt[,c(3,7)]), rank)) %>% 
+  data.frame() %>% 
+  mutate(x = 0 - mean_val1 - cor) %>% 
+  arrange(desc(x))
+
+mapview::mapview(xt, zcol = "cor")
+
+
 
 
 
