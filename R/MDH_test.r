@@ -9,7 +9,11 @@ library("tidyverse")
 ### Number of rows and columns in prediction rasters
 ## needed for making simulated rasters, as well as for predicting real-world rasters
 iris_test <- head(iris,10)
+<<<<<<< HEAD
 sepal_length <- iris_test$Sepal.Length
+=======
+print(iris_test)
+>>>>>>> 2e4fc5d04df60f726d585135b224902c2f34cfd3
 
 cols = 200
 rows = 200
