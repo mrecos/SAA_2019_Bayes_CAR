@@ -8,19 +8,23 @@ library("tidyverse")
 
 ### Number of rows and columns in prediction rasters
 ## needed for making simulated rasters, as well as for predicting real-world rasters
-cols = 100
-rows = 100
+cols = 200
+rows = 200
 fisnet_cell_size = 10
 
 ### RANDOM ENV and RANDOM CULTURAL ------------------------------------
 # raster
-RenvRcult1 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = 1)
+RenvRcult1 <- NLMR::nlm_random(cols,rows)
+RenvRcult1 <- raster::scale(RenvRcult1)
 vx_RenvRcult1 <- velox(RenvRcult1) # cast raster to velox
-RenvRcult2 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = 1)
+RenvRcult2 <- NLMR::nlm_random(cols,rows)
+RenvRcult2 <- raster::scale(RenvRcult2)
 vx_RenvRcult2 <- velox(RenvRcult2) # cast raster to velox
-RenvRcult3 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = 1)
+RenvRcult3 <- NLMR::nlm_random(cols,rows)
+RenvRcult3 <- raster::scale(RenvRcult3)
 vx_RenvRcult3 <- velox(RenvRcult3) # cast raster to velox
-RenvRcult4 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = 1)
+RenvRcult4 <- NLMR::nlm_random(cols,rows)
+RenvRcult4 <- raster::scale(RenvRcult4)
 vx_RenvRcult4 <- velox(RenvRcult4) # cast raster to velox
 # table
 RenvRcult_fishnet <- st_make_grid(st_as_sfc(st_bbox(RenvRcult1)), 
@@ -43,11 +47,111 @@ show_landscape(list(
   "mean_val4" = RenvRcult4), unique_scales = TRUE) +
   geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
 
-pairs(as.matrix(st_drop_geometry(RenvRcult_fishnet[,3:6])))
+pairs(as.matrix(st_drop_geometry(RenvRcult_fishnet[,2:6])))
 
 
-# or is this semi-structured? structured may be totally homogeneous
+### STRUCTURED ENV and STRCTURED CULTURAL ------------------------------------
+# raster
+SenvScult1 <- NLMR::nlm_random(cols,rows) # random b/ it will be set to a value of 1
+SenvScult1[] <- 1
+
+# table
+SenvScult_fishnet <- st_make_grid(st_as_sfc(st_bbox(SenvScult1)), 
+                                  cellsize = fisnet_cell_size, square = FALSE) %>%
+  st_sf() %>% 
+  mutate(fishnet_id = row_number(),
+         count = 1,
+         mean_val1 = 1,
+         mean_val2 = 1,
+         mean_val3 = 1,
+         mean_val4 = 1)
+
+hex_plot <- gather(st_drop_geometry(SenvScult_fishnet), id, val, -fishnet_id, -count) %>% 
+  left_join(., SenvScult_fishnet, by = "fishnet_id") %>% 
+  st_sf() %>% 
+  dplyr::select(id, val)
+
+show_landscape(list(
+  "mean_val1" = SenvScult1,
+  "mean_val2" = SenvScult1,
+  "mean_val3" = SenvScult1,
+  "mean_val4" = SenvScult1), unique_scales = TRUE) +
+  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+
+pairs(as.matrix(st_drop_geometry(SenvScult_fishnet[,2:6])))
+
+
+### RADNOM ENV and STRCTURED CULTURAL ------------------------------------
+# raster
+RenvScult1 <- NLMR::nlm_random(cols,rows)
+RenvScult1 <- raster::scale(RenvScult1)
+vx_RenvScult1 <- velox(RenvScult1) # cast raster to velox
+RenvScult2 <- NLMR::nlm_random(cols,rows)
+RenvScult2 <- raster::scale(RenvScult2)
+vx_RenvScult2 <- velox(RenvScult2) # cast raster to velox
+RenvScult3 <- NLMR::nlm_random(cols,rows)
+RenvScult3 <- raster::scale(RenvScult3)
+vx_RenvScult3 <- velox(RenvScult3) # cast raster to velox
+RenvScult4 <- NLMR::nlm_random(cols,rows)
+RenvScult4 <- raster::scale(RenvScult4)
+vx_RenvScult4 <- velox(RenvScult4) # cast raster to velox
+# table
+RenvScult_fishnet <- st_make_grid(st_as_sfc(st_bbox(RenvScult1)), 
+                                  cellsize = fisnet_cell_size, square = FALSE) %>%
+  st_sf() %>% 
+  mutate(fishnet_id = row_number(),
+         count = 1,
+         mean_val1 = as.numeric(vx_RenvScult1$extract(., fun = mean, small = TRUE)),
+         mean_val2 = as.numeric(vx_RenvScult2$extract(., fun = mean, small = TRUE)),
+         mean_val3 = as.numeric(vx_RenvScult3$extract(., fun = mean, small = TRUE)),
+         mean_val4 = as.numeric(vx_RenvScult4$extract(., fun = mean, small = TRUE)))
+hex_plot <- gather(st_drop_geometry(RenvScult_fishnet), id, val, -fishnet_id, -count) %>% 
+  left_join(., RenvScult_fishnet, by = "fishnet_id") %>% 
+  st_sf() %>% 
+  dplyr::select(id, val)
+show_landscape(list(
+  "mean_val1" = RenvScult1,
+  "mean_val2" = RenvScult2,
+  "mean_val3" = RenvScult3,
+  "mean_val4" = RenvScult4), unique_scales = TRUE) +
+  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+
+pairs(as.matrix(st_drop_geometry(RenvScult_fishnet[,2:6])))
+
+
+
 ### STRUCTURED ENV and RANDOM CULTURAL ------------------------------------
+# raster
+SenvRcult1 <- NLMR::nlm_random(cols,rows)
+SenvRcult1[] <- 1
+# table
+SenvRcult_fishnet <- st_make_grid(st_as_sfc(st_bbox(SenvRcult1)), 
+                                  cellsize = fisnet_cell_size, square = FALSE) %>%
+  st_sf() %>% 
+  mutate(fishnet_id = row_number(),
+         # count = rpois(nrow(.),8),
+         count = rbinom(nrow(.),1, 0.5),
+         mean_val1 = 1,
+         mean_val2 = 1,
+         mean_val3 = 1,
+         mean_val4 = 1)
+hex_plot <- gather(st_drop_geometry(SenvRcult_fishnet), id, val, -fishnet_id, -count) %>% 
+  left_join(., SenvRcult_fishnet, by = "fishnet_id") %>% 
+  st_sf() %>% 
+  dplyr::select(id, val)
+show_landscape(list(
+  "mean_val1" = SenvRcult1,
+  "mean_val2" = SenvRcult1,
+  "mean_val3" = SenvRcult1,
+  "mean_val4" = SenvRcult1), unique_scales = TRUE) +
+  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+
+pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,2:6])))
+
+
+
+# or is this semi-structured? structured may be totally homogeneous            WORKING!!!
+### SEMI-STRUCTURED ENV and RANDOM CULTURAL ------------------------------------ ???????
 # raster
 SenvRcult_grad <- NLMR::nlm_distancegradient(cols,rows, origin = c(20, 30, 10, 15))
 SenvRcult_grad <- abs(1-(SenvRcult_grad+0.01))*2 # invert and weight
@@ -86,7 +190,9 @@ show_landscape(list(
   "mean_val4" = SenvRcult4), unique_scales = TRUE) +
   geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
 
-pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,3:6])))
+pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,2:6])))
+
+
 
 ########## Testing ability to detect correlation...
 # intersect fishnet to all raster, for each cell compute corr, put more sites in cells with higher corr??
