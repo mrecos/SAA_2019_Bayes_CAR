@@ -9,8 +9,9 @@ library("tidyverse")
 ### Number of rows and columns in prediction rasters
 ## needed for making simulated rasters, as well as for predicting real-world rasters
 iris_test <- head(iris,10)
-
-print(iris_test)
+x <- 3 
+y <- 2
+x + y
 
 cols = 200
 rows = 200
