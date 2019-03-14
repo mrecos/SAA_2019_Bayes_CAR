@@ -13,6 +13,7 @@ rows = 200
 fisnet_cell_size = 10
 
 ### RANDOM ENV and RANDOM CULTURAL ------------------------------------
+### Both env and counts are uniform
 # raster
 RenvRcult1 <- NLMR::nlm_random(cols,rows)
 RenvRcult1 <- raster::scale(RenvRcult1)
@@ -31,54 +32,89 @@ RenvRcult_fishnet <- st_make_grid(st_as_sfc(st_bbox(RenvRcult1)),
                              cellsize = fisnet_cell_size, square = FALSE) %>%
   st_sf() %>% 
   mutate(fishnet_id = row_number(),
-         count = rpois(nrow(.),8),
+         # logit rho ~ -1.5
+         count = rpois(nrow(.),8),                     # random by G.D.P
+         # logit rho very negative
+         # count = sample(0:20,nrow(.), replace = TRUE), # or uniform across expected counts?
+         # logit rho ~ 0
+         # count = sample(0:1,nrow(.), replace = TRUE),    # or uniform across (0,1) ints?
+         # count = runif(nrow(.)),                       # or unform (0,1)? # NO!, b/c Poisson
          mean_val1 = as.numeric(vx_RenvRcult1$extract(., fun = mean, small = TRUE)),
          mean_val2 = as.numeric(vx_RenvRcult2$extract(., fun = mean, small = TRUE)),
          mean_val3 = as.numeric(vx_RenvRcult3$extract(., fun = mean, small = TRUE)),
          mean_val4 = as.numeric(vx_RenvRcult4$extract(., fun = mean, small = TRUE)))
-hex_plot <- gather(st_drop_geometry(RenvRcult_fishnet), id, val, -fishnet_id, -count) %>% 
-  left_join(., RenvRcult_fishnet, by = "fishnet_id") %>% 
-  st_sf() %>% 
-  dplyr::select(id, val)
-show_landscape(list(
-  "mean_val1" = RenvRcult1,
-  "mean_val2" = RenvRcult2,
-  "mean_val3" = RenvRcult3,
-  "mean_val4" = RenvRcult4), unique_scales = TRUE) +
-  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
-
+# hex_plot <- gather(st_drop_geometry(RenvRcult_fishnet), id, val, -fishnet_id, -count) %>%
+#   left_join(., RenvRcult_fishnet, by = "fishnet_id") %>%
+#   st_sf() %>%
+#   dplyr::select(id, val)
+# show_landscape(list(
+#   "mean_val1" = RenvRcult1,
+#   "mean_val2" = RenvRcult2,
+#   "mean_val3" = RenvRcult3,
+#   "mean_val4" = RenvRcult4), unique_scales = TRUE) +
+#   geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+# 
 pairs(as.matrix(st_drop_geometry(RenvRcult_fishnet[,2:6])))
 
 
 ### STRUCTURED ENV and STRCTURED CULTURAL ------------------------------------
 # raster
-SenvScult1 <- NLMR::nlm_random(cols,rows) # random b/ it will be set to a value of 1
-SenvScult1[] <- 1
+# started with this as "structure" == uniformity, may need to be about tight spatial correlation
+# SenvScult1 <- NLMR::nlm_random(cols,rows) # random b/ it will be set to a value of 1
+# SenvScult1[] <- 1
+
+SenvScult1 <- NLMR::nlm_distancegradient(cols,rows, origin = c(90, 110, 90, 110))
+SenvScult1 <- SenvScult1 + NLMR::nlm_random(cols,rows)
+vx_SenvScult1 <- velox(SenvScult1) # cast raster to velox
+SenvScult2 <- NLMR::nlm_distancegradient(cols,rows, origin = c(90, 110, 90, 110))
+SenvScult2 <- SenvScult2 + NLMR::nlm_random(cols,rows)
+vx_SenvScult2 <- velox(SenvScult2) # cast raster to velox
+SenvScult3 <- NLMR::nlm_distancegradient(cols,rows, origin = c(90, 110, 90, 110))
+SenvScult3 <- SenvScult3 + NLMR::nlm_random(cols,rows)
+vx_SenvScult3 <- velox(SenvScult3) # cast raster to velox
+SenvScult4 <- NLMR::nlm_distancegradient(cols,rows, origin = c(90, 110, 90, 110))
+SenvScult4 <- SenvScult4 + NLMR::nlm_random(cols,rows)
+vx_SenvScult4 <- velox(SenvScult4) # cast raster to velox
+
+
+SenvScult_sites <- NLMR::nlm_distancegradient(cols,rows, origin = c(90, 110, 90, 110))
+SenvScult_sites <- SenvScult_sites + NLMR::nlm_random(cols,rows)
+vx_SenvScult_sites <- velox(SenvScult_sites) # cast raster to velox
 
 # table
+## Strucutred sites will follow the same gradient, but need int counts... I guess
 SenvScult_fishnet <- st_make_grid(st_as_sfc(st_bbox(SenvScult1)), 
                                   cellsize = fisnet_cell_size, square = FALSE) %>%
   st_sf() %>% 
   mutate(fishnet_id = row_number(),
-         count = 1,
-         mean_val1 = 1,
-         mean_val2 = 1,
-         mean_val3 = 1,
-         mean_val4 = 1)
+         count = ,
+         mean_val1 = as.numeric(vx_SenvScult1$extract(., fun = mean, small = TRUE)),
+         mean_val2 = as.numeric(vx_SenvScult2$extract(., fun = mean, small = TRUE)),
+         mean_val3 = as.numeric(vx_SenvScult3$extract(., fun = mean, small = TRUE)),
+         mean_val4 = as.numeric(vx_SenvScult4$extract(., fun = mean, small = TRUE)))
 
-hex_plot <- gather(st_drop_geometry(SenvScult_fishnet), id, val, -fishnet_id, -count) %>% 
-  left_join(., SenvScult_fishnet, by = "fishnet_id") %>% 
-  st_sf() %>% 
-  dplyr::select(id, val)
+# previous method of uniformity
+  # st_sf() %>% 
+  # mutate(fishnet_id = row_number(),
+  #        count = 1,
+  #        mean_val1 = 1,
+  #        mean_val2 = 1,
+  #        mean_val3 = 1,
+  #        mean_val4 = 1)
 
-show_landscape(list(
-  "mean_val1" = SenvScult1,
-  "mean_val2" = SenvScult1,
-  "mean_val3" = SenvScult1,
-  "mean_val4" = SenvScult1), unique_scales = TRUE) +
-  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
-
-pairs(as.matrix(st_drop_geometry(SenvScult_fishnet[,2:6])))
+# hex_plot <- gather(st_drop_geometry(SenvScult_fishnet), id, val, -fishnet_id, -count) %>% 
+#   left_join(., SenvScult_fishnet, by = "fishnet_id") %>% 
+#   st_sf() %>% 
+#   dplyr::select(id, val)
+# 
+# show_landscape(list(
+#   "mean_val1" = SenvScult1,
+#   "mean_val2" = SenvScult1,
+#   "mean_val3" = SenvScult1,
+#   "mean_val4" = SenvScult1), unique_scales = TRUE) +
+#   geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+# 
+# pairs(as.matrix(st_drop_geometry(SenvScult_fishnet[,2:6])))
 
 
 ### RADNOM ENV and STRCTURED CULTURAL ------------------------------------
@@ -105,18 +141,18 @@ RenvScult_fishnet <- st_make_grid(st_as_sfc(st_bbox(RenvScult1)),
          mean_val2 = as.numeric(vx_RenvScult2$extract(., fun = mean, small = TRUE)),
          mean_val3 = as.numeric(vx_RenvScult3$extract(., fun = mean, small = TRUE)),
          mean_val4 = as.numeric(vx_RenvScult4$extract(., fun = mean, small = TRUE)))
-hex_plot <- gather(st_drop_geometry(RenvScult_fishnet), id, val, -fishnet_id, -count) %>% 
-  left_join(., RenvScult_fishnet, by = "fishnet_id") %>% 
-  st_sf() %>% 
-  dplyr::select(id, val)
-show_landscape(list(
-  "mean_val1" = RenvScult1,
-  "mean_val2" = RenvScult2,
-  "mean_val3" = RenvScult3,
-  "mean_val4" = RenvScult4), unique_scales = TRUE) +
-  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
-
-pairs(as.matrix(st_drop_geometry(RenvScult_fishnet[,2:6])))
+# hex_plot <- gather(st_drop_geometry(RenvScult_fishnet), id, val, -fishnet_id, -count) %>% 
+#   left_join(., RenvScult_fishnet, by = "fishnet_id") %>% 
+#   st_sf() %>% 
+#   dplyr::select(id, val)
+# show_landscape(list(
+#   "mean_val1" = RenvScult1,
+#   "mean_val2" = RenvScult2,
+#   "mean_val3" = RenvScult3,
+#   "mean_val4" = RenvScult4), unique_scales = TRUE) +
+#   geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+# 
+# pairs(as.matrix(st_drop_geometry(RenvScult_fishnet[,2:6])))
 
 
 
@@ -130,22 +166,22 @@ SenvRcult_fishnet <- st_make_grid(st_as_sfc(st_bbox(SenvRcult1)),
   st_sf() %>% 
   mutate(fishnet_id = row_number(),
          # count = rpois(nrow(.),8),
-         count = rbinom(nrow(.),1, 0.5),
+         count = sample(0:1,nrow(.), replace = TRUE),    # or uniform across (0,1) ints?
          mean_val1 = 1,
          mean_val2 = 1,
          mean_val3 = 1,
          mean_val4 = 1)
-hex_plot <- gather(st_drop_geometry(SenvRcult_fishnet), id, val, -fishnet_id, -count) %>% 
-  left_join(., SenvRcult_fishnet, by = "fishnet_id") %>% 
-  st_sf() %>% 
-  dplyr::select(id, val)
-show_landscape(list(
-  "mean_val1" = SenvRcult1,
-  "mean_val2" = SenvRcult1,
-  "mean_val3" = SenvRcult1,
-  "mean_val4" = SenvRcult1), unique_scales = TRUE) +
-  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
-
+# hex_plot <- gather(st_drop_geometry(SenvRcult_fishnet), id, val, -fishnet_id, -count) %>% 
+#   left_join(., SenvRcult_fishnet, by = "fishnet_id") %>% 
+#   st_sf() %>% 
+#   dplyr::select(id, val)
+# show_landscape(list(
+#   "mean_val1" = SenvRcult1,
+#   "mean_val2" = SenvRcult1,
+#   "mean_val3" = SenvRcult1,
+#   "mean_val4" = SenvRcult1), unique_scales = TRUE) +
+#   geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+# 
 pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,2:6])))
 
 
@@ -158,13 +194,13 @@ SenvRcult_grad <- abs(1-(SenvRcult_grad+0.01))*2 # invert and weight
 SenvRcult1 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = cols*2) * SenvRcult_grad
 SenvRcult1 <- raster::scale(SenvRcult1)
 vx_SenvRcult1 <- velox(SenvRcult1) # cast raster to velox
-SenvRcult2 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = cols*2) * -SenvRcult_grad
+SenvRcult2 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = cols*2) * SenvRcult_grad
 SenvRcult2 <- raster::scale(SenvRcult2)
 vx_SenvRcult2 <- velox(SenvRcult2) # cast raster to velox
 SenvRcult3 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = cols*2) * SenvRcult_grad
 SenvRcult3 <- raster::scale(SenvRcult3)
 vx_SenvRcult3 <- velox(SenvRcult3) # cast raster to velox
-SenvRcult4 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = cols*2) * -SenvRcult_grad
+SenvRcult4 <- NLMR::nlm_gaussianfield(cols,rows, autocorr_range = cols*2) * SenvRcult_grad
 SenvRcult4 <- raster::scale(SenvRcult4)
 vx_SenvRcult4 <- velox(SenvRcult4) # cast raster to velox
 # table
@@ -172,25 +208,25 @@ SenvRcult_fishnet <- st_make_grid(st_as_sfc(st_bbox(SenvRcult1)),
                                   cellsize = fisnet_cell_size, square = FALSE) %>%
   st_sf() %>% 
   mutate(fishnet_id = row_number(),
-         count = rpois(nrow(.),8),
+         count = 1, # sample(0:1,nrow(.), replace = TRUE),    # or uniform across (0,1) ints?
          mean_val1 = as.numeric(vx_SenvRcult1$extract(., fun = mean, small = TRUE)),
          mean_val2 = as.numeric(vx_SenvRcult2$extract(., fun = mean, small = TRUE)),
          mean_val3 = as.numeric(vx_SenvRcult3$extract(., fun = mean, small = TRUE)),
          mean_val4 = as.numeric(vx_SenvRcult4$extract(., fun = mean, small = TRUE)))
 
-hex_plot <- gather(st_drop_geometry(SenvRcult_fishnet), id, val, -fishnet_id, -count) %>% 
-  left_join(., SenvRcult_fishnet, by = "fishnet_id") %>% 
-  st_sf() %>% 
-  dplyr::select(id, val)
-
+# hex_plot <- gather(st_drop_geometry(SenvRcult_fishnet), id, val, -fishnet_id, -count) %>% 
+#   left_join(., SenvRcult_fishnet, by = "fishnet_id") %>% 
+#   st_sf() %>% 
+#   dplyr::select(id, val)
+# 
 show_landscape(list(
   "mean_val1" = SenvRcult1,
   "mean_val2" = SenvRcult2,
   "mean_val3" = SenvRcult3,
-  "mean_val4" = SenvRcult4), unique_scales = TRUE) +
-  geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
-
-pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,2:6])))
+  "mean_val4" = SenvRcult4), unique_scales = TRUE) #+
+#   geom_sf(data = hex_plot, inherit.aes = FALSE, color = "gray30", alpha = 0)
+# 
+# pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,2:6])))
 
 
 

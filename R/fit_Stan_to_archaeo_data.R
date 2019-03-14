@@ -12,14 +12,14 @@ options(mc.cores = 6);
 source(file.path("R","nb_data_funs.R"))
 source(file.path("R","archaeo_BYM_Functions.R"))
 
-input_fishent = SenvRcult_fishnet
+input_fishnet = sites_fishnet_stan
 
 # convert fishnet to spatial
-fishnet.sp <- as(input_fishent, "Spatial")
+fishnet_sp <- as(input_fishnet, "Spatial")
 
 #### MAKE SPATIAL COMPONENT
 # make Neighbor list object
-nb_fishnet = poly2nb(fishnet.sp);
+nb_fishnet = poly2nb(fishnet_sp);
 # cast neighbors to graph (nodes and edges)
 graph_fishnet = nb2graph(nb_fishnet);
 N = graph_fishnet$N;
@@ -29,20 +29,36 @@ N_edges = graph_fishnet$N_edges;
 scaling_factor = scale_nb_components(nb_fishnet)[1];
 
 #### MAKE INDEPENDENT VAR COMPONENT
-x = st_drop_geometry(input_fishent) %>% 
+x = st_drop_geometry(input_fishnet) %>% 
   dplyr::select(mean_val1, mean_val2, mean_val3, mean_val4) %>% 
   as.matrix()
 K = ncol(x)
 
 #### MAKE DEPENDENT VAR COMPONENT
-y = input_fishent$count
+y = input_fishnet$count
 # Set expected value (NOT SURE HOW TO DEAL WITH THIS!)
 E = rep(0,length(y));
 # set pop > 0 so we can use log(pop) as offset
 E[E < 1] = 0.01;
 
+#### MAKE TEST DATA COMPONENT
+# N_test <- 30
+# x_test <- x[1:N_test,]
+# E_test <- rep(0.01,N_test)
+
+# N_test <- nrow(test_fishnet)
+# x_test <-  st_drop_geometry(test_fishnet) %>% 
+#   dplyr::select(mean_val1, mean_val2, mean_val3, mean_val4) %>% 
+#   as.matrix()
+# E_test <- rep(0.01,N_test)
+
 #### Compile Stan model
 bym2_stan = stan_model(file.path("STAN","BYM2.stan"), verbose = FALSE);
+
+
+# prior_dist <- stan(file=file.path("STAN","BYM2.stan"),
+#                    iter=1000, warmup=0, chains=1,
+#                    seed=4838282, algorithm="Fixed_param")
 
 #### Fit Stan model
 bym2_fit = sampling(bym2_stan, data=list(N = N,
@@ -55,21 +71,24 @@ bym2_fit = sampling(bym2_stan, data=list(N = N,
                                          x = x,
                                          scaling_factor = scaling_factor), 
                     control = list(adapt_delta = 0.97), 
-                    chains=3, warmup=5000, iter=6000, save_warmup=FALSE, verbose = TRUE);
+                    chains=4, warmup=2000, iter=4000, save_warmup=FALSE, verbose = TRUE);
 
 
 #### Inspect Stan results
-print(bym2_fit, digits=3, pars=c("beta0", "rho", "logit_rho", "sigma", "mu[1]", "mu[2]", "mu[3]", "phi[1]", "phi[2]", "phi[3]", "theta[1]", "theta[2]", "theta[3]"), probs=c(0.025, 0.5, 0.975))
+print(bym2_fit, digits=3, pars=c("beta0", "rho", "logit_rho", "sigma", "betas[1]", "betas[2]",
+"betas[3]", "betas[4]", "mu[1]", "mu[2]", "mu[3]", "phi[1]", "phi[2]", "phi[3]", "theta[1]", "theta[2]", "theta[3]"), probs=c(0.025, 0.5, 0.975))
 
 #### Plot
+# traceplot(bym2_fit, pars = c("beta0"), inc_warmup = FALSE, nrow = 2)
+
 posterior <- as.matrix(bym2_fit)
 
 # plot of parameter distributions
 plot_title <- ggtitle("Posterior distributions",
                       "with medians and 80% intervals")
-# rho and sigma
+# betas
 mcmc_areas(posterior,
-           pars = c("rho", "sigma"),
+           pars = c("betas[1]", "betas[2]", "betas[3]", "betas[4]"),
            prob = 0.8) + plot_title
 
 # log odds of rho (logit)
@@ -122,6 +141,54 @@ ggplot(mu_plot) +
 hist(rstan::extract(bym2_fit, "phi")[[1]])
 # colnames of theta
 hist(rstan::extract(bym2_fit, "theta")[[1]])
+
+
+## map mcmc results
+mu_plot_map <- mu_plot %>% 
+  arrange(parameter) %>% 
+  as.data.frame() %>% 
+  bind_cols(.,input_fishnet) %>% 
+  st_as_sf() %>% 
+  arrange(desc(count))
+
+mapview(mu_plot_map, zcol = "mean") + mapview(sites)
+
+# Phi plot
+phi <- rstan::extract(bym2_fit, "phi")
+phi_plot_map <- data.frame(phi) %>% 
+  gather(parameter, estimate) %>% 
+  group_by(parameter) %>% 
+  summarise(mean = quantile(estimate, probs=0.5),
+            high = quantile(estimate, probs=0.9),
+            low  = quantile(estimate, probs=0.1)) %>% 
+  mutate(parameter = as.numeric(str_remove(parameter, "phi."))) %>% 
+  dplyr::left_join(., data.frame("parameter" = seq(1:length(y)), obs = y), by="parameter") %>% 
+  arrange(parameter) %>% 
+  as.data.frame() %>% 
+  bind_cols(.,input_fishnet) %>% 
+  st_as_sf() %>% 
+  arrange(desc(count))
+
+mapview(phi_plot_map, zcol = "mean") + mapview(sites)
+
+## Theta plot
+theta <- rstan::extract(bym2_fit, "theta")
+theta_plot_map <- data.frame(theta) %>% 
+  gather(parameter, estimate) %>% 
+  group_by(parameter) %>% 
+  summarise(mean = quantile(estimate, probs=0.5),
+            high = quantile(estimate, probs=0.9),
+            low  = quantile(estimate, probs=0.1)) %>% 
+  mutate(parameter = as.numeric(str_remove(parameter, "theta."))) %>% 
+  dplyr::left_join(., data.frame("parameter" = seq(1:length(y)), obs = y), by="parameter") %>% 
+  arrange(parameter) %>% 
+  as.data.frame() %>% 
+  bind_cols(.,input_fishnet) %>% 
+  st_as_sf() %>% 
+  arrange(desc(count))
+
+mapview(theta_plot_map, zcol = "mean") + mapview(sites)
+
 
 
 

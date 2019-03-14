@@ -44,10 +44,10 @@ model {
   // This is the prior for phi! (up to proportionality)
   target += -0.5 * dot_self(phi[node1] - phi[node2]);
 
-  beta0 ~ normal(0.0, 1.0);
-  betas ~ normal(0.0, 1.0);
-  theta ~ normal(0.0, 1.0);
-  sigma ~ normal(0, 1.0);
+  beta0 ~ normal(0.0, 1.0); // og = 1
+  betas ~ normal(0.0, 1.0); // og = 1
+  theta ~ normal(0.0, 1.0); // og = 1 // this is what moves rho to right
+  sigma ~ normal(0.0, 1.0); // og = 1
   rho ~ beta(0.5, 0.5);
   // soft sum-to-zero constraint on phi)
   sum(phi) ~ normal(0, 0.001 * N);  // equivalent to mean(phi) ~ normal(0,0.001)
