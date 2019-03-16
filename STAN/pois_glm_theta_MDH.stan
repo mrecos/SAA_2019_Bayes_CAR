@@ -22,19 +22,21 @@ parameters {
   real beta0;            // intercept
   vector[K] betas;       // covariates
   real<lower=0> sigma;        // overall standard deviation
+  vector[N] theta;           // heterogeneous random effects
 }
 transformed parameters {
 // none
 }
 model {
-  y ~ poisson_log(log_E + beta0 + x * betas + sigma);  // co-variates
+  y ~ poisson_log(log_E + beta0 + x * betas + theta * sigma);  // co-variates
 
   beta0 ~ normal(0.0, 1.0); // og = 1
   betas ~ normal(0.0, 1.0); // og = 1
   sigma ~ normal(0.0, 1.0); // og = 1
+  theta ~ normal(0, 1);
 }
 generated quantities {
-  vector[N] eta = log_E + beta0 + x * betas + sigma; // co-variates
+  vector[N] eta = log_E + beta0 + x * betas + theta * sigma; // co-variates
   vector[N] mu = exp(eta);
 }
 

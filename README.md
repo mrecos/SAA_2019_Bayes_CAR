@@ -24,14 +24,14 @@ This research presents a method to test the endogenous spatial correlation effec
 
 #### Research
 
-:black_square_button: - read sources below
+:ballot_box_with_check: - read sources below
 
 
 #### Data Prep.
 
-:black_square_button: - create simulated environments
+:ballot_box_with_check: - create simulated environments
 
-:black_square_button: - create simulated sites
+:ballot_box_with_check: - create simulated sites
 
 :ballot_box_with_check: - create fishnet grid (octagonal fishnet)
 
@@ -39,18 +39,18 @@ This research presents a method to test the endogenous spatial correlation effec
 
 :ballot_box_with_check: - Framework of probabilistic model
 
-:black_square_button: - gather data from real-world test case
+:ballot_box_with_check: - gather data from real-world test case
 
 
 ##### Code
 
-:black_square_button: - simulations
+:ballot_box_with_check: - simulations
 
 :ballot_box_with_check: - Stan model
 
-:black_square_button: - evlaution of simulations
+:ballot_box_with_check: - evlaution of simulations
 
-:black_square_button: - test on real data
+:ballot_box_with_check: - test on real data
 
 
 #### Writing
