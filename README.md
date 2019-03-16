@@ -1,5 +1,5 @@
 # SAA 2019 - Bayesian Hierarchical CAR Model 
-### April 11th, 2019 @ Albuquerque, MN
+### April 11th, 2019 @ Albuquerque, NM
 
 
 ### Session: 
@@ -115,5 +115,5 @@ This research presents a method to test the endogenous spatial correlation effec
   
   
 - [NOTEBOOK FOR SPATIAL DATA ANALYSIS ](https://www.seas.upenn.edu/~ese502/NOTEBOOK/Part_III/6_Spatial_Regression_Models_for_Areal_Data_Analysis.pdf)
-  * Class notes from Tony Smith at UPenn for sptail regression and touching in CAR
+  * Class notes from Tony Smith at UPenn for spatial regression and touching in CAR
   
