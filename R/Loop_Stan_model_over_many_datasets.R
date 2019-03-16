@@ -90,21 +90,33 @@ rho_results <- rho_results %>% group_by(model) %>%
          site = str_sub(model, 1, 5),
          env  = str_sub(model, 7, 10)) 
 
+# saveRDS(rho_results, "rho_results.rdata")
+
 ggplot(rho_results, aes(x=logit_rho)) +
   # geom_density(fill = "skyblue", color = "skyblue4") +
   geom_density(aes(fill=model)) +
   geom_vline(xintercept = 0, colour = 'gray30', linetype = "dashed") +
-  geom_vline(aes(xintercept = med, group = model), colour = 'firebrick') +
+  geom_vline(aes(xintercept = med, group = model), colour = 'black') +
   scale_x_continuous(limits = c(-10,10))+
   facet_grid(env~site) +
+  labs(x="") +
   # scale_fill_manual(values = lacroix_palette("KiwiSandia",n = 4)) +
   scale_fill_manual(values = stepped(n = 16)) +
   theme_bw() +
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    axis.title.y=element_blank(),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    strip.background = element_blank()
+    # strip.text.x = element_blank(),
+    # strip.text.y = element_blank()
   )
 
-# 
+
 # ggplot(rho_results, aes(x=rho)) +
 #   geom_density(fill = "skyblue", color = "skyblue4") +
 #   geom_vline(xintercept = 0.5, colour = 'gray30') +

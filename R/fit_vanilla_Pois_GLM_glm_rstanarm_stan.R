@@ -1,3 +1,5 @@
+###### superseded by glm_theta_phi_BYM2_model_compare.R which does all combinations in native stan
+
 library("maptools");
 library("spdep");
 library("rgdal")
