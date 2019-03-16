@@ -21,7 +21,7 @@ This research presents a method to test the endogenous spatial correlation effec
 ### Graphical Abstract:
 
 
-![Image](../blob/master/Poster/Graphic_Abstract.jpg?raw=true)
+![Image](./Poster/Graphic_Abstract.jpg?raw=true)
 
 
 *****
