@@ -15,7 +15,7 @@ scale_this <- function(x){
 }
 
 
-fishnet_cell_size <- 750
+fishnet_cell_size <- 500
 test_fishnet_cell_size <- 250
 
 shp_loc <- "D:/PROJECTS_RESEARCH/PASS_DistReg_data/SHP"

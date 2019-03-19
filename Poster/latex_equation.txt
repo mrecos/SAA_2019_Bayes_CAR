@@ -1,0 +1,17 @@
+https://www.codecogs.com/latex/eqneditor.php
+
+y_i \sim Poisson(log(E)\Psi _i))
+
+log(\Psi _i)=\beta _0+\chi \beta +\theta +\phi 
+
+\theta +\phi =\sigma (\sqrt{1-\rho}\theta +\sqrt{\rho}\phi )
+
+\phi = -\frac{1}{2}(\sum_{i\sim j}(\phi _i -\phi _j)^2)
+
+\beta _o,\beta _i,\theta,\sigma \sim N(0,1)
+
+\theta \sim N(0,1)
+
+\sigma\sim N(0,1)
+
+\rho \sim beta(0.5,0.5)

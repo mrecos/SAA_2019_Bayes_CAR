@@ -152,7 +152,7 @@ mu_compare <- data.frame(id = glm_mu$parameter,
   mutate(glm_RMSE   = rmse(observed, glm_mean),
          theta_RMSE = rmse(observed, theta_mean),
          phi_RMSE   = rmse(observed, phi_mean),
-         bym2_RMSE  = rmse(observed, bym2_mean))
+         bym2_RMSE  = rmse(observed, bym2_mean)) %>% 
   arrange(desc(observed))
   
 round(colMeans(mu_compare),3)
@@ -199,8 +199,56 @@ xx <- gather(mu_plot_map, model, mean, -id, -observed, -geometry) %>% filter(str
 sites_facet <- rbind(sites,sites,sites,sites) %>% 
   mutate(model = rep(c("glm_mean","theta_mean","phi_mean","bym2_mean"),each=nrow(sites)))
 tm_shape(xx) +
-  tm_fill("mean",n=max(y)+1) +
-  tm_shape(sites_facet) +
-  tm_borders(col = "black") +
+  tm_fill("mean", midpoint=NA, breaks = seq(0,max(xx$mean),0.5),
+          palette = tmaptools::get_brewer_pal("RdPu", n = max(y)+1)) +
+  tm_borders(col = "gray50", lwd = 0.5, alpha = 0.5) +
+  # tm_shape(sites_facet) +
+  # tm_borders(col = "black") +
   tm_facets(by = "model", nrow = 2)
 
+
+#### convoluting times the mean
+mean(-log(dpois(mu_compare$observed, lambda=mu_compare$glm_mean)))
+mean(-log(dpois(mu_compare$observed, lambda=mu_compare$phi_mean)))
+mean(-log(dpois(mu_compare$observed, lambda=mu_compare$theta_mean)))
+mean(-log(dpois(mu_compare$observed, lambda=mu_compare$bym2_mean)))
+mean(-log(dpois(bym2_conved_mu$obs.y, lambda=bym2_conved_mu$mean.y)))
+mean(-log(dpois(bym2_conved_mu$obs.y, lambda=ifelse(bym2_conved_mu$conved_mu_mean<=0,0.01,bym2_conved_mu$conved_mu_mean))))
+
+bym2_conved_mu  <- rstan::extract(bym2_fit, "convolved_re")%>% 
+  data.frame(.) %>% 
+  gather(parameter, estimate) %>% 
+  group_by(parameter) %>% 
+  summarise(mean = quantile(estimate, probs=0.5),
+            high = quantile(estimate, probs=0.9),
+            low  = quantile(estimate, probs=0.1)) %>% 
+  mutate(parameter = as.numeric(str_remove(parameter, "convolved_re."))) %>% 
+  dplyr::left_join(., data.frame("parameter" = seq(1:length(y)), obs = y), by="parameter") %>% 
+  dplyr::left_join(., bym2_mu, by = "parameter") %>% 
+  mutate(conved_mu_mean = mean.x * mean.y,
+         conved_mu_low  = low.x  * low.y,
+         conved_mu_high = high.x * high.y) %>% 
+  arrange(parameter) %>% 
+  as.data.frame() %>% 
+  bind_cols(.,input_fishnet) %>% 
+  st_as_sf()
+
+tm_shape(bym2_conved_mean) +
+  tm_fill("conved_mu_mean", midpoint=NA, 
+          breaks = seq(0,max(bym2_conved_mu$conved_mu_mean),0.25),
+          palette = tmaptools::get_brewer_pal("BuPu", n = max(bym2_conved_mu$conved_mu_mean)+1)) +
+  tm_borders(col = "gray50", lwd = 0.5, alpha = 0.5) +
+  tm_shape(sites_facet) +
+  tm_borders(col = "black")
+
+mu_conv_mu_compare <- bym2_conved_mu %>% 
+  st_drop_geometry() %>% 
+  select(conved_mu_mean, observed = obs.y, bym2_mu = mean.y) %>% 
+  gather(parameter, value, -observed)
+  
+ggplot(mu_conv_mu_compare, aes(x = value, y = observed, group = parameter, color = parameter)) +
+  geom_point() +
+  geom_abline() +
+  geom_smooth(method = "lm") +
+  coord_equal() +
+  theme_bw()

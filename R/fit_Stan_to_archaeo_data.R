@@ -151,7 +151,12 @@ mu_plot_map <- mu_plot %>%
   st_as_sf() %>% 
   arrange(desc(count))
 
-mapview(mu_plot_map, zcol = "mean") + mapview(sites)
+# mapview(mu_plot_map, zcol = "mean") + mapview(sites)
+tm_shape(mu_plot_map) +
+  tm_fill("mean",n=max(y)+1) +
+  tm_shape(sites) +
+  tm_borders(col = "black")
+
 
 # Phi plot
 phi <- rstan::extract(bym2_fit, "phi")
@@ -169,7 +174,11 @@ phi_plot_map <- data.frame(phi) %>%
   st_as_sf() %>% 
   arrange(desc(count))
 
-mapview(phi_plot_map, zcol = "mean") + mapview(sites)
+# mapview(phi_plot_map, zcol = "mean") + mapview(sites)
+tm_shape(phi_plot_map) +
+  tm_fill("mean", midpoint=0, palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+  tm_shape(sites) +
+  tm_borders(col = "black")
 
 ## Theta plot
 theta <- rstan::extract(bym2_fit, "theta")
@@ -187,7 +196,35 @@ theta_plot_map <- data.frame(theta) %>%
   st_as_sf() %>% 
   arrange(desc(count))
 
-mapview(theta_plot_map, zcol = "mean") + mapview(sites)
+# mapview(theta_plot_map, zcol = "mean") + mapview(sites)
+tm_shape(theta_plot_map) +
+  tm_fill("mean", midpoint=0, palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+  tm_shape(sites) +
+  tm_borders(col = "black")
+
+## convolved_re plot
+convolved_re <- rstan::extract(bym2_fit, "convolved_re")
+convolved_re_plot_map <- data.frame(convolved_re) %>% 
+  gather(parameter, estimate) %>% 
+  group_by(parameter) %>% 
+  summarise(mean = quantile(estimate, probs=0.5),
+            high = quantile(estimate, probs=0.9),
+            low  = quantile(estimate, probs=0.1)) %>% 
+  mutate(parameter = as.numeric(str_remove(parameter, "convolved_re."))) %>% 
+  dplyr::left_join(., data.frame("parameter" = seq(1:length(y)), obs = y), by="parameter") %>% 
+  arrange(parameter) %>% 
+  as.data.frame() %>% 
+  bind_cols(.,input_fishnet) %>% 
+  st_as_sf() %>% 
+  arrange(desc(count))
+
+# mapview(theta_plot_map, zcol = "mean") + mapview(sites)
+tm_shape(convolved_re_plot_map) +
+  tm_fill("mean", midpoint=0, 
+          palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+  tm_borders(col = "gray50", lwd = 0.5, alpha = 0.5) +
+  tm_shape(sites) +
+  tm_borders(col = "black")
 
 
 
