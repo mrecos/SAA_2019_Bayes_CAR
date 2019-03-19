@@ -56,5 +56,11 @@ generated quantities {
   real logit_rho = log(rho / (1.0 - rho));
   vector[N] eta = log_E + beta0 + x * betas + convolved_re * sigma; // co-variates
   vector[N] mu = exp(eta);
+  
+  // http://mc-stan.org/loo/articles/loo2-with-rstan.html
+  vector[N] log_lik;
+  for (n in 1:N) {
+    log_lik[n] = poisson_log_lpmf(y[n] | eta[n]);
+  }
 }
 
