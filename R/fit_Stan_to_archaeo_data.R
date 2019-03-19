@@ -152,10 +152,13 @@ mu_plot_map <- mu_plot %>%
   arrange(desc(count))
 
 # mapview(mu_plot_map, zcol = "mean") + mapview(sites)
-tm_shape(mu_plot_map) +
-  tm_fill("mean",n=max(y)+1) +
+bym2_mu <- tm_shape(mu_plot_map) +
+  tm_fill("mean", midpoint=NA, breaks = seq(0,max(mu_plot_map$mean),0.25),
+          palette = tmaptools::get_brewer_pal("Greens", n = 12)) +
+  tm_borders(col = "gray50", lwd = 0.5, alpha = 0.5) +
   tm_shape(sites) +
-  tm_borders(col = "black")
+  tm_borders(col = "black") + 
+  tm_legend(show=FALSE)
 
 
 # Phi plot
@@ -172,13 +175,18 @@ phi_plot_map <- data.frame(phi) %>%
   as.data.frame() %>% 
   bind_cols(.,input_fishnet) %>% 
   st_as_sf() %>% 
-  arrange(desc(count))
+  arrange(desc(count)) 
 
 # mapview(phi_plot_map, zcol = "mean") + mapview(sites)
-tm_shape(phi_plot_map) +
-  tm_fill("mean", midpoint=0, palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+bym2_phi <- tm_shape(phi_plot_map) +
+  tm_fill("mean", midpoint=0, breaks = seq(min(phi_plot_map$mean),max(phi_plot_map$mean),0.25),
+          palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+  tm_borders(col = "gray50", lwd = 0.5, alpha = 0.5) +
   tm_shape(sites) +
-  tm_borders(col = "black")
+  tm_borders(col = "black") + 
+  tm_legend(show=FALSE)
+tmap_save(bym2_phi, "bym2_phi.svg", width = 5, height = 5.5)
+
 
 ## Theta plot
 theta <- rstan::extract(bym2_fit, "theta")
@@ -197,10 +205,13 @@ theta_plot_map <- data.frame(theta) %>%
   arrange(desc(count))
 
 # mapview(theta_plot_map, zcol = "mean") + mapview(sites)
-tm_shape(theta_plot_map) +
-  tm_fill("mean", midpoint=0, palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+bym2_theta <- tm_shape(theta_plot_map) +
+  tm_fill("mean", midpoint=0,
+          palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
   tm_shape(sites) +
-  tm_borders(col = "black")
+  tm_borders(col = "black") + 
+  tm_legend(show=FALSE)
+tmap_save(bym2_theta, "bym2_theta.svg", width = 5, height = 5.5)
 
 ## convolved_re plot
 convolved_re <- rstan::extract(bym2_fit, "convolved_re")
@@ -219,13 +230,46 @@ convolved_re_plot_map <- data.frame(convolved_re) %>%
   arrange(desc(count))
 
 # mapview(theta_plot_map, zcol = "mean") + mapview(sites)
-tm_shape(convolved_re_plot_map) +
-  tm_fill("mean", midpoint=0, 
-          palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+bym2_convolved_re <- tm_shape(convolved_re_plot_map) +
+  tm_fill("mean", midpoint=0, breaks = seq(min(convolved_re_plot_map$mean),
+                                           max(convolved_re_plot_map$mean),0.25),
+          palette = tmaptools::get_brewer_pal("BrBG", n = 12)) +
   tm_borders(col = "gray50", lwd = 0.5, alpha = 0.5) +
   tm_shape(sites) +
+  tm_borders(col = "black") + 
+  tm_legend(show=FALSE)
+tmap_save(bym2_convolved_re, "bym2_convolved_re.svg", width = 5, height = 5.5)
+
+###
+bym2_conved_mu  <- convolved_re_plot_map %>% 
+  dplyr::left_join(., st_drop_geometry(mu_plot_map), by = "parameter") %>% 
+  mutate(conved_mu_mean = mean.x * mean.y,
+         conved_mu_low  = low.x  * low.y,
+         conved_mu_high = high.x * high.y) %>% 
+  arrange(parameter) %>% 
+  as.data.frame() %>% 
+  bind_cols(.,input_fishnet) %>% 
+  st_as_sf()
+
+tm_shape(bym2_conved_mean) +
+  tm_fill("conved_mu_mean", midpoint=NA, 
+          breaks = seq(0,max(bym2_conved_mu$conved_mu_mean),0.25),
+          palette = tmaptools::get_brewer_pal("BuPu", n = max(bym2_conved_mu$conved_mu_mean)+1)) +
+  tm_borders(col = "gray50", lwd = 0.5, alpha = 0.5) +
+  tm_shape(sites_facet) +
   tm_borders(col = "black")
 
+mu_conv_mu_compare <- bym2_conved_mu %>% 
+  st_drop_geometry() %>% 
+  select(conved_mu_mean, observed = obs.y, bym2_mu = mean.y) %>% 
+  gather(parameter, value, -observed)
+
+ggplot(mu_conv_mu_compare, aes(x = value, y = observed, group = parameter, color = parameter)) +
+  geom_point() +
+  geom_abline() +
+  geom_smooth(method = "lm") +
+  coord_equal() +
+  theme_bw()
 
 
 
