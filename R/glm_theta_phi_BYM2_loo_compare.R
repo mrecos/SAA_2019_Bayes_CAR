@@ -16,4 +16,4 @@ log_lik_bym2 <- extract_log_lik(bym2_fit, merge_chains = FALSE)
 rel_n_eff_bym2 <- relative_eff(exp(log_lik_bym2))
 bym2_loo <- loo(log_lik_bym2, r_eff = rel_n_eff_bym2, cores = 2)
 
-loo::compare(glm_loo, theta_loo, phi_loo, bym2_loo)
+loo_table <- loo::compare(glm_loo, theta_loo, phi_loo, bym2_loo)

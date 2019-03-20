@@ -207,7 +207,7 @@ theta_plot_map <- data.frame(theta) %>%
 # mapview(theta_plot_map, zcol = "mean") + mapview(sites)
 bym2_theta <- tm_shape(theta_plot_map) +
   tm_fill("mean", midpoint=0,
-          palette = tmaptools::get_brewer_pal("PiYG", n = 12)) +
+          palette = tmaptools::get_brewer_pal("BrBG", n = 12)) +
   tm_shape(sites) +
   tm_borders(col = "black") + 
   tm_legend(show=FALSE)

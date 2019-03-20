@@ -157,27 +157,44 @@ mu_compare <- data.frame(id = glm_mu$parameter,
   
 round(colMeans(mu_compare),3)
 
-ggplot(gather(mu_compare, model, rmse, -id, -observed) %>% filter(str_detect(model,"RMSE")),
+ggplot(mu_compare %>% 
+         dplyr::select("GLM" = glm_RMSE, "Non-Spatial" = theta_RMSE, 
+                     "Spatial" = phi_RMSE, "BYM" = bym2_RMSE) %>% 
+         gather(model, rmse) %>% 
+         mutate(model = forcats::fct_relevel(model,c("GLM", "Non-Spatial", "Spatial", "BYM"))),
        aes(x = model, y = rmse, color = model)) +
-  geom_jitter( width = 0.25) +
+  geom_violin() +
+  geom_jitter(width = 0.2, alpha = 0.45) +
   scale_y_log10() +
+  # scale_color_brewer(palette = "Set1") +
+  # scale_color_manual(values = stepped(n = 4)) +
+  scale_color_viridis_d(option="B", begin = 0.1, end = 0.8) +
+  labs(y = "Root Mean Square Error (log scale)", x = "") +
   theme_bw() +
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    axis.text.x = element_text(size = 18)
   )
 
-ggplot(gather(mu_compare, model, mean, -id, -observed) %>% filter(str_detect(model,"mean")),
+ggplot(mu_compare %>% 
+         dplyr::select("GLM" = glm_mean, "Non-Spatial" = theta_mean, 
+                       "Spatial" = phi_mean, "BYM" = bym2_mean, observed) %>% 
+         gather(model, mean, -observed) %>% 
+         mutate(model = forcats::fct_relevel(model,c("GLM", "Non-Spatial", "Spatial", "BYM"))),
        aes(x = mean, y = observed, group = model, color = model)) +
-  geom_point() +
-  facet_wrap(~model) +
+  geom_jitter(width = 0, height = 0.1, alpha =0.75) +
+  facet_wrap(~model, nrow = 1) +
   scale_x_continuous(limits = c(0,max(mu_compare$observed))) +
-  labs(x = "Prediction Mean") +
+  scale_color_viridis_d(option="B", begin = 0.1, end = 0.8) +
+  labs(x = "Prediction Counts", y="Observed Counts") +
   coord_equal() +
   geom_abline(linetype = "dashed") +
   theme_bw() +
   theme(
-    legend.position = "none"
-  )
+    legend.position = "none",
+    strip.background =element_rect(fill="white"),
+    strip.text = element_text(size = 14)
+  )   
 
 ###
 mu_plot_map <- mu_compare %>% 
