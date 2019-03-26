@@ -1,0 +1,4 @@
+
+Con(IsNull("up_ed_h2.tif"), "rv_ed_h2.tif", "up_ed_h2.tif")
+
+Con(IsNull("Tecbaco_DEM.tif"), FocalStatistics("Tecbaco_DEM.tif", NbrCircle(10, "CELL"), "MEAN"), "Tecbaco_DEM.tif")
