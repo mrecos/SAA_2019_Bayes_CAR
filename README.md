@@ -1,6 +1,8 @@
 # SAA 2019 - Bayesian Hierarchical ICAR Model 
 ### April 11th, 2019 @ Albuquerque, NM
 
+## 2019/04/14 - Post confernece note:
+Thank you for visiting this repo/poster. The code is in the process of reorganization and a little tidying. The poster is in the `poster` folder. I will issue a DOI and do a github release when the code is relatively acceptable. Please let me know if you have any questions. Thanks!
 
 ### Session: 
 #### Novel Statistical Techniques in Archaeology II (QUANTARCH II) (Sponsored by SAA QUANTARCH Interest Group)
@@ -71,7 +73,7 @@ This research presents a method to test the endogenous spatial correlation effec
 
 :ballot_box_with_check: - layout/design
 
-:black_square_button: - printing
+:ballot_box_with_check: - printing
 
 
 ### Resources:
