@@ -3,12 +3,6 @@ library("spdep");
 library("rgdal")
 library("rstan");
 library("bayesplot")
-# library("tidyr")
-# library("stringr")
-
-rmse <- function(obs,pred){
-  sqrt(mean((obs-pred)^2,na.rm=TRUE))
-}
 
 options(mc.cores = 6);
 
@@ -16,6 +10,7 @@ options(mc.cores = 6);
 source(file.path("R","nb_data_funs.R"))
 source(file.path("R","archaeo_BYM_Functions.R"))
 
+#### From PASS_data_prep.R
 input_fishnet = sites_fishnet_stan
 
 # convert fishnet to spatial
@@ -40,7 +35,7 @@ K = ncol(x)
 
 #### MAKE DEPENDENT VAR COMPONENT
 y = input_fishnet$count
-# Set expected value (NOT SURE HOW TO DEAL WITH THIS!)
+# Set expected value (Should be better method here)
 E = rep(0,length(y));
 # set pop > 0 so we can use log(pop) as offset
 E[E < 1] = 0.01;

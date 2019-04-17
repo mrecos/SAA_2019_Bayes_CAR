@@ -3,8 +3,6 @@ library("spdep");
 library("rgdal")
 library("rstan");
 library("bayesplot")
-# library("tidyr")
-# library("stringr")
 
 options(mc.cores = 6);
 
@@ -36,29 +34,13 @@ K = ncol(x)
 
 #### MAKE DEPENDENT VAR COMPONENT
 y = input_fishnet$count
-# Set expected value (NOT SURE HOW TO DEAL WITH THIS!)
+# Set expected value (Should deal with this better)
 E = rep(0,length(y));
 # set pop > 0 so we can use log(pop) as offset
 E[E < 1] = 0.01;
 
-#### MAKE TEST DATA COMPONENT
-# N_test <- 30
-# x_test <- x[1:N_test,]
-# E_test <- rep(0.01,N_test)
-
-# N_test <- nrow(test_fishnet)
-# x_test <-  st_drop_geometry(test_fishnet) %>% 
-#   dplyr::select(mean_val1, mean_val2, mean_val3, mean_val4) %>% 
-#   as.matrix()
-# E_test <- rep(0.01,N_test)
-
 #### Compile Stan model
 bym2_stan = stan_model(file.path("STAN","BYM2.stan"), verbose = FALSE);
-
-
-# prior_dist <- stan(file=file.path("STAN","BYM2.stan"),
-#                    iter=1000, warmup=0, chains=1,
-#                    seed=4838282, algorithm="Fixed_param")
 
 #### Fit Stan model
 bym2_fit = sampling(bym2_stan, data=list(N = N,

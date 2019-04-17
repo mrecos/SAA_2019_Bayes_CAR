@@ -1,3 +1,7 @@
+########################################
+## From stan-dev example models, unaltered
+## https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R
+#########################################
 library(INLA);
 library(spdep);
 

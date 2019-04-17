@@ -8,3 +8,6 @@ st_drop_geometry <- function(x) {
 ll <- function(dat, crs = 4326){
   st_transform(dat, crs)
 }
+rmse <- function(obs,pred){
+  sqrt(mean((obs-pred)^2,na.rm=TRUE))
+}

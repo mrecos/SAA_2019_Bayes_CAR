@@ -48,7 +48,7 @@ for(i in seq_along(models_list)){
   
   #### MAKE DEPENDENT VAR COMPONENT
   y = input_fishent$count
-  # Set expected value (NOT SURE HOW TO DEAL WITH THIS!)
+  # Set expected value (Should deal with this better)
   E = rep(0,length(y));
   # set pop > 0 so we can use log(pop) as offset
   E[E < 1] = 0.01;
@@ -67,7 +67,7 @@ for(i in seq_along(models_list)){
                                            x = x,
                                            scaling_factor = scaling_factor), 
                       control = list(adapt_delta = 0.97), 
-                      chains=4, warmup=200, iter=4000, save_warmup=FALSE, verbose = FALSE);
+                      chains=4, warmup=2000, iter=6000, save_warmup=FALSE, verbose = FALSE);
   
   
   #### Plot
@@ -112,32 +112,4 @@ ggplot(rho_results, aes(x=logit_rho)) +
     panel.grid.minor = element_blank(),
     panel.border = element_blank(),
     strip.background = element_blank()
-    # strip.text.x = element_blank(),
-    # strip.text.y = element_blank()
   )
-
-
-# ggplot(rho_results, aes(x=rho)) +
-#   geom_density(fill = "skyblue", color = "skyblue4") +
-#   geom_vline(xintercept = 0.5, colour = 'gray30') +
-#   scale_x_continuous(limits = c(0,1))+
-#   facet_grid(site~env) +
-#   theme_bw()
-# 
-# 
-# ggplot(rho_results, aes(x=sigma)) +
-#   geom_density(fill = "skyblue", color = "skyblue4") +
-#   # geom_vline(xintercept = 0.5, colour = 'gray30') +
-#   # scale_x_continuous(limits = c(0,1))+
-#   facet_grid(site~env) +
-#   theme_bw()
-# 
-# 
-# ggplot(rho_results, aes(x=betas_1)) +
-#   geom_density(fill = "skyblue", color = "skyblue4") +
-#   # geom_vline(xintercept = 0.5, colour = 'gray30') +
-#   scale_x_continuous(limits = c(-2,2))+
-#   facet_grid(site~env) +
-#   theme_bw()
-# 
-

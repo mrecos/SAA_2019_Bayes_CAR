@@ -14,9 +14,7 @@ scale_this <- function(x){
   as.vector(scale(x))
 }
 
-
 fishnet_cell_size <- 500
-test_fishnet_cell_size <- 250
 
 shp_loc <- "D:/PROJECTS_RESEARCH/PASS_DistReg_data/SHP"
 raster_loc <- "D:/PROJECTS_RESEARCH/PASS_DistReg_data/variables"
@@ -30,8 +28,6 @@ all_std_32c <- raster(file.path(raster_loc,"tiff", "all_std_32c.tif"))
 all_elev_2_drainh <- raster(file.path(raster_loc,"tiff", "all_elev_2_drainh.tif"))
 
 env_vars <- raster::stack(all_ed_h2, all_cd_h7, all_elev_2_drainh, all_std_32c)
-
-# mapview(all_std_32c) + mapview(sites)
 
 # cast to Velox
 all_ed_h2_vx   <- velox(all_ed_h2) # cast raster to velox
@@ -86,28 +82,3 @@ sites_fishnet_stan <- sites_fishnet3 %>%
          mean_elev_2_drainh = scale_this(mean_elev_2_drainh)) %>% 
   dplyr::select(count, mean_val1 = mean_ed_h2, mean_val2 = mean_cd_h7, 
                        mean_val3 = mean_std_32c, mean_val4 = mean_elev_2_drainh)
-
-
-
-### Test data creation
-####### NOTE! THE FEATURE VALUES SHOULD BE SCALED BASED ON TEST DATA VALUES
-# test_fishnet <- st_make_grid(st_as_sfc(st_bbox(st_buffer(UTM18(sites),1000))),
-#                               cellsize = test_fishnet_cell_size, square = FALSE) %>%
-#   st_sf() %>%
-#   dplyr::mutate(fishnet_id = dplyr::row_number(),
-#                 f_area_m2  = as.numeric(st_area(.))) %>%
-#   ll(.)  %>% 
-#   mutate(mean_ed_h2   = as.numeric(all_ed_h2_vx$extract(., fun = mean, small = TRUE)),
-#          mean_cd_h7   = as.numeric(all_cd_h7_vx$extract(., fun = mean, small = TRUE)),
-#          mean_std_32c = as.numeric(all_std_32c_vx$extract(., fun = mean, small = TRUE)),
-#          mean_elev_2_drainh = as.numeric(all_elev_2_drainh_vx$extract(., 
-#                                                                       fun = mean, small = TRUE)))  %>%
-#   mutate(mean_ed_h2 = scale_this(mean_ed_h2),
-#          mean_cd_h7 = scale_this(mean_cd_h7),
-#          mean_std_32c = scale_this(mean_std_32c),
-#          mean_elev_2_drainh = scale_this(mean_elev_2_drainh)) %>% 
-#   dplyr::select(mean_val1 = mean_ed_h2, mean_val2 = mean_cd_h7, 
-#                 mean_val3 = mean_std_32c, mean_val4 = mean_elev_2_drainh) %>% 
-#   mutate_if(is.numeric, funs(ifelse(is.na(.), 0, .))) ### <- NA to ZERO!!!     ZERO!
-# 
-# mapview(test_fishnet, zcol = "mean_val1")
