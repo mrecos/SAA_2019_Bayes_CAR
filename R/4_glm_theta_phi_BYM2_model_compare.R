@@ -7,8 +7,8 @@ library("bayesplot")
 options(mc.cores = 6);
 
 # source functions
-source(file.path("R","nb_data_funs.R"))
-source(file.path("R","archaeo_BYM_Functions.R"))
+source(file.path("R","Functions_nb_data.R"))
+source(file.path("R","Functions_archaeo_BYM.R"))
 
 #### From PASS_data_prep.R
 input_fishnet = sites_fishnet_stan
@@ -224,5 +224,3 @@ mean(-log(dpois(mu_compare$observed, lambda=mu_compare$glm_mean)))
 mean(-log(dpois(mu_compare$observed, lambda=mu_compare$phi_mean)))
 mean(-log(dpois(mu_compare$observed, lambda=mu_compare$theta_mean)))
 mean(-log(dpois(mu_compare$observed, lambda=mu_compare$bym2_mean)))
-mean(-log(dpois(bym2_conved_mu$obs.y, lambda=bym2_conved_mu$mean.y)))
-mean(-log(dpois(bym2_conved_mu$obs.y, lambda=ifelse(bym2_conved_mu$conved_mu_mean<=0,0.01,bym2_conved_mu$conved_mu_mean))))

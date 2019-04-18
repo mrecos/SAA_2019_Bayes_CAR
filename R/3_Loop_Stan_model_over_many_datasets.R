@@ -1,6 +1,9 @@
 library("LaCroixColoR")
 library("pals")
 
+### multi-core Stan
+options(mc.cores = 6);
+
 models_list <- list(siteC_envC = siteC_envC,
                     siteC_envI = siteC_envI,
                     siteC_envR = siteC_envR,

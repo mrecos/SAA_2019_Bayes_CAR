@@ -7,8 +7,8 @@ library("bayesplot")
 options(mc.cores = 6);
 
 # source functions
-source(file.path("R","nb_data_funs.R"))
-source(file.path("R","archaeo_BYM_Functions.R"))
+source(file.path("R","Functions_nb_data.R"))
+source(file.path("R","Functions_archaeo_BYM.R"))
 
 input_fishnet = sites_fishnet_stan
 

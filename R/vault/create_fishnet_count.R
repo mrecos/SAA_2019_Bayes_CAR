@@ -19,7 +19,6 @@ pass_fishnet <- st_make_grid(st_as_sfc(st_bbox(st_buffer(pass1, 500))),
   mutate(fishnet_id = row_number(),
          f_area_m2 = as.numeric(st_area(.)))
 
-# elevation <- get_ned(as(ll(pass_fishnet), "Spatial"), label = "test", res = "13")
 elevation <- raster("C:/R_local/SAA_2019_Bayes_CAR/RAW/NED/13/USGS_NED_13_n41w076_ArcGrid/grdn41w076_13")
 
 # mapview(pass_fishnet, alpha.regions = 0) + mapview(pass1, color = "red", col.regions = "red")

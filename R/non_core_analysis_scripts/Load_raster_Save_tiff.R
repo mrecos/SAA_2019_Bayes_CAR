@@ -29,14 +29,4 @@ rv <- crop(rv, extent(sites_buffer))
 raster::writeRaster(up, filename = file.path(raster_loc,"tiff",paste0("up_",var,".tiff")))
 raster::writeRaster(rv, filename = file.path(raster_loc,"tiff",paste0("rv_",var,".tiff")))
 
-# 
 # mapview(rv6_ed_h2) + mapview(sites)
-# 
-# 
-# # xx <- raster::extract(elevation, as(ll(pass_fishnet), "Spatial"), small = TRUE) # TOO SLOW!
-# 
-# vx <- velox(elevation) # cast raster to velox
-# pass_fishnet2$mean_elev <- vx$extract(ll(pass_fishnet2), fun = mean, small = TRUE)
-# pass_fishnet2$med_elev  <- vx$extract(ll(pass_fishnet2), fun = median, small = TRUE)
-# pass_fishnet2$max_elev  <- vx$extract(ll(pass_fishnet2), fun = max, small = TRUE)
-# pass_fishnet2$min_elev  <- vx$extract(ll(pass_fishnet2), fun = min, small = TRUE)

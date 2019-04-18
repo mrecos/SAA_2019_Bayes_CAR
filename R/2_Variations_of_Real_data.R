@@ -4,11 +4,9 @@ library("rgdal")
 library("rstan");
 library("bayesplot")
 
-options(mc.cores = 6);
-
 # source functions
-source(file.path("R","nb_data_funs.R"))
-source(file.path("R","archaeo_BYM_Functions.R"))
+source(file.path("R","Functions_nb_data.R"))
+source(file.path("R","Functions_archaeo_BYM.R"))
 
 #### From PASS_data_prep.R
 siteI_envI <- sites_fishnet_stan
@@ -117,5 +115,3 @@ siteU_envU <- siteI_envI %>%
          mean_val2 = runif(nrow(siteI_envI),min(mean_val2),max(mean_val2)),
          mean_val3 = runif(nrow(siteI_envI),min(mean_val3),max(mean_val3)),
          mean_val4 = runif(nrow(siteI_envI),min(mean_val4),max(mean_val4)))
-
-####

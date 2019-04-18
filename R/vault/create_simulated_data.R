@@ -186,8 +186,8 @@ pairs(as.matrix(st_drop_geometry(SenvRcult_fishnet[,2:6])))
 
 
 
-# or is this semi-structured? structured may be totally homogeneous            WORKING!!!
-### SEMI-STRUCTURED ENV and RANDOM CULTURAL ------------------------------------ ???????
+# or is this semi-structured? structured may be totally homogeneous 
+### SEMI-STRUCTURED ENV and RANDOM CULTURAL ------------------------------------ 
 # raster
 SenvRcult_grad <- NLMR::nlm_distancegradient(cols,rows, origin = c(20, 30, 10, 15))
 SenvRcult_grad <- abs(1-(SenvRcult_grad+0.01))*2 # invert and weight
